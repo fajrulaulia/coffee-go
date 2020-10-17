@@ -2,7 +2,6 @@ package coffeego
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	helper "coffeego/helper"
@@ -24,8 +23,7 @@ func UserListRequest(w http.ResponseWriter, r *http.Request) {
 
 	output, err := json.Marshal(resp)
 	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(fmt.Sprintf("{\"email\":\"%v\",\"status_code\":\"%v\"}", "email", 200)))
+		helper.ReponseOnServerError(w)
 		return
 	}
 	w.Write(output)
