@@ -4,12 +4,13 @@ import (
 	helper "coffeego/helper"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type productResponse struct {
@@ -27,20 +28,44 @@ func ProductListRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var resp []productResponse
 	var item productResponse
-	cur, err := helper.Collection("products").Find(context.TODO(), bson.M{})
+	findOptions := options.Find()
+
+	var page int64 = 0
+	var limit int64 = 0
+	if r.URL.Query().Get("page") != "" && r.URL.Query().Get("limit") != "" {
+		page, err := strconv.ParseInt(r.URL.Query().Get("page"), 10, 32)
+		if err != nil {
+			helper.ReponseOnServerError(w)
+			return
+		}
+		limit, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 32)
+		if err != nil {
+			helper.ReponseOnServerError(w)
+			return
+		}
+		if page == 1 {
+			findOptions.SetSkip(0)
+			findOptions.SetLimit(limit)
+		} else {
+			findOptions.SetSkip((page - 1) * limit)
+			findOptions.SetLimit(limit)
+		}
+	}
+	cur, err := helper.Collection("products").Find(context.TODO(), bson.M{}, findOptions)
 	if err != nil {
 		helper.ReponseOnServerError(w)
 		return
 	}
+
 	type response struct {
-		Limit string            `json:"limit"`
-		Page  string            `json:"page"`
+		Total int               `json:"total"`
+		Limit int64             `json:"limit"`
+		Page  int64             `json:"page"`
 		Data  []productResponse `json:"data"`
 	}
 	var headerResponse response
 
 	for cur.Next(context.TODO()) {
-		log.Println("&item", cur)
 		err := cur.Decode(&item)
 		if err != nil {
 			helper.ReponseOnServerError(w)
@@ -49,6 +74,9 @@ func ProductListRequest(w http.ResponseWriter, r *http.Request) {
 		resp = append(resp, item)
 	}
 	headerResponse.Data = resp
+	headerResponse.Limit = limit
+	headerResponse.Page = page
+	headerResponse.Total = len(resp)
 	output, err := json.Marshal(headerResponse)
 	if err != nil {
 		helper.ReponseOnServerError(w)
