@@ -1,0 +1,29 @@
+version: '3'
+services: 
+    database:
+        image:  'mongo:latest'
+        container_name: 'mongodb-server'
+        environment: 
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: dHuh8h28h74JHGHYV672BY6h
+        command: mongod
+        volumes: 
+            - ../migrations:/docker-entrypoint-initdb.d/
+        ports:
+            - '27017:27017'
+        restart: always
+
+    manager:
+        image: "mongo-express:latest" 
+        container_name: 'mongodb-manager'
+        restart: always
+        depends_on:
+            - database
+        environment:
+         - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+         - ME_CONFIG_MONGODB_ADMINPASSWORD=dHuh8h28h74JHGHYV672BY6h
+         - ME_CONFIG_MONGODB_SERVER=database
+         - ME_CONFIG_BASICAUTH_USERNAME=user
+         - ME_CONFIG_BASICAUTH_PASSWORD=user
+        ports:
+         - '8082:8081'
