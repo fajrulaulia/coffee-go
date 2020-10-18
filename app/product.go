@@ -79,7 +79,6 @@ func ProductListRequest(w http.ResponseWriter, r *http.Request) {
 	headerResponse.Total = len(resp)
 	output, err := json.Marshal(headerResponse)
 	if err != nil {
-		helper.ReponseOnServerError(w)
 		return
 	}
 	w.Write(output)
