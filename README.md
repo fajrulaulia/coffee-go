@@ -1,5 +1,6 @@
 # coffee-go
-backend module written by golang and integrated by mongo-db
+backend module written by golang and integrated by mongo-db, this is a boilerplate standarization 
+for development backend using golang and mongodb.
 
 ## Development Mode
 - Requirements
