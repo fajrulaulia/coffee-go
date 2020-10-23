@@ -1,6 +1,6 @@
 # coffee-go
-coffee-go written by golang and integrated by mongo-db for backend application, this is a standarization
-for development backend using golang and mongodb.
+coffee-go written by golang and integrated by mongo-db, this is a standarization
+for development API service using golang and mongodb.
 
 ## Setup for Development
 you'r system should be installed depedencies like `go`, `make`, `docker-engine` and `docker-compose`
