@@ -1,4 +1,7 @@
 # coffee-go
+[![](https://img.shields.io/badge/golang-1.14-blue)](https://golang.org/) [![](https://img.shields.io/badge/docker-19.03.13-9cf)](https://www.docker.com/)
+
+
 coffee-go written by golang and integrated by mongo-db, this is a standarization
 for development API service using golang and mongodb.
 
